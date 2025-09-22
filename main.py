@@ -2,7 +2,7 @@
 Askme Service - Product Search and Import API
 Port: 8017
 """
-from fastapi import FastAPI, HTTPException, Depends, Query, Header
+from fastapi import FastAPI, HTTPException, Depends, Query, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -11,6 +11,8 @@ import uvicorn
 import sys
 import os
 import asyncio
+import logging
+import traceback
 from typing import List, Optional, Dict, Any
 from bson import ObjectId
 import json
@@ -588,7 +590,7 @@ async def search_icecat_index(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to search icecat_index: {str(e)}")
 
-@app.post("/askme/code")
+@app.post("/code")
 async def search_by_code_massive(
     request: Dict[str, Any],
     auth: Optional[Dict] = Depends(verify_admin_token)
@@ -664,7 +666,7 @@ async def search_by_code_massive(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Massive code search failed: {str(e)}")
 
-@app.get("/askme/code/status")
+@app.get("/code/status")
 async def get_code_search_status():
     """Get worker pool status and performance metrics"""
     try:
@@ -694,7 +696,7 @@ async def get_code_search_status():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get status: {str(e)}")
 
-@app.post("/askme/code/bulk-index")
+@app.post("/code/bulk-index")
 async def bulk_index_products(
     request: Dict[str, Any],
     auth: Optional[Dict] = Depends(verify_admin_token)
